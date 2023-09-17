@@ -1,7 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
-
+import socketClient  from "socket.io-client";
+import {useEffect} from "react";
 function App() {
+  useEffect(() => {
+    let socket = socketClient()
+    socket.on('connection', () => {
+      console.log(`I'm connected with the back-end`);
+    });
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
