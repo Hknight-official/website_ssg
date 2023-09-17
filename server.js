@@ -16,9 +16,20 @@ require('dotenv').config()
 console.log('.env file loaded.')
 const app = express();
 const server = http.createServer(app);
+
+// TODO: cors enable for development, please remove when build product
+const cors = require('cors')
+app.use(cors())
+
+
 app.use(bodyParser.json())
 console.log('express loaded.');
-const io = new Server(server);
+const io = new Server(server, {
+    cors: { // TODO: cors enable for development, please remove when build product
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 // socket io
 io.on('connection', function(client) {
     console.log(client.id+' Client connected...');
