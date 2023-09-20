@@ -1,0 +1,46 @@
+.live-view-container {
+    height: 100vh;
+}
+
+.live-view-content {
+    display: inline-block;
+    position: relative;
+    padding: 1rem;
+    font-size: 2rem;
+    color: #FFEFC2;
+    font-weight: bold;
+    text-shadow: #2b2f32 ;
+    text-align: justify;
+    animation: typing 3s linear forwards;
+}
+.brand{
+    font-weight: bold;
+    color: #FFEFC2;
+}
+
+@keyframes typing {
+    to {
+        visibility: visible;
+    }
+}
+
+.typed-char {
+    opacity: 0;
+    visibility: hidden;
+    animation-name: typing-char;
+    animation-duration: 3s;
+    animation-delay: 0ms;
+    animation-iteration-count: 60;
+    animation-timing-function: linear;
+}
+
+@keyframes typing-char {
+    from {
+        opacity: 0;
+        visibility: visible;
+    }
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
+}
