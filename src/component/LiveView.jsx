@@ -20,7 +20,7 @@ const LiveView = ({ data }) => {
                     setCanRender(true);
                     setShowTitle(true);
                     setContent('');
-                }, 20000);
+                }, 15000);
             }
         }, 3000);
 

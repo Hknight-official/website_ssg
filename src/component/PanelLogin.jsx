@@ -6,7 +6,7 @@ const PanelLogin = () =>{
     }
     return(
         <div className={"d-flex flex-column bg-black bg-opacity-75 justify-content-center"} style={myStyle}>
-            <div className={"p-4 m-3 d-md-none"}><h1 className={"text-white"}>School Psychology for Future </h1></div>
+            <div className={"p-4 m-3 d-sm-none"}><h1 className={"text-white"}>School Psychology for Future </h1></div>
             <div className={"mt-auto mb-auto "}>
                 <TriangleComponents content={"Get Started"} button={true} />
             </div>
