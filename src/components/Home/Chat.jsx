@@ -5,7 +5,7 @@ import socketIOClient from "socket.io-client";
 import {DataUserContext} from "../../Contexts";
 const initlistMessages = [
     {
-        avatar: 'http://localhost:5000/images/avatar_ai.jpg',
+        avatar: configWebsite.url+'/images/avatar_ai.jpg',
         username: 'Administrator',
         context: 'Chào mừng bạn đến với trang website. Hy vọng bạn sẽ có trải nghiệm tuyệt vời và giải quyết hiệu quả các vấn đề tâm lý tại đây.',
         isUser: false,
