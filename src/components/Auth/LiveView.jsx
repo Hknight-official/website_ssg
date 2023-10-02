@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './LiveView.css';
+import '../../assets/css/auth/components/LiveView.css';
 
 const LiveView = ({ data }) => {
     const [current, setCurrent] = useState(0);

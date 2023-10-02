@@ -1,4 +1,4 @@
-import './App.css';
+import './assets/css/App.css';
 // import configWebsite from './config_website.json'
 import {
   createBrowserRouter,
@@ -21,11 +21,11 @@ const router = createBrowserRouter([
 
 function App() {
 
-  return (
-      <div className="App">
-        <RouterProvider router={router} />
-      </div>
-  );
+      return (
+          <div className="App">
+            <RouterProvider router={router} />
+          </div>
+      );
 }
 
 export default App;

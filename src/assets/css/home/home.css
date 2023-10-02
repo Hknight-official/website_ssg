@@ -1,0 +1,32 @@
+.home-page {
+    position: relative;
+    height:100vh;
+    margin: 0;
+}
+
+.home-page div {
+    position: relative;
+}
+
+@media only screen and (max-width: 768px) {
+    .home-page > div {
+        position: absolute;
+    }
+    .home-page > .left-navbar-main {
+        left: -500px;
+        z-index: 1;
+    }
+
+    .home-page > .right-navbar-main {
+        top: -1000px;
+        z-index: 5;
+    }
+
+    .home-page > .show-left-mobile {
+        left: 0;
+    }
+    .home-page > .show-right-mobile {
+        top: 0;
+    }
+
+}

@@ -4,10 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const http = require('http');
 const { Server } = require("socket.io");
-
-const md5 = require('md5')
-
-
+const User = require('./app/models/users')
 
 // init express and socket io and env config
 console.log("init system...")
@@ -19,10 +16,13 @@ const server = http.createServer(app);
 
 // TODO: cors enable for development, please remove when build product
 const cors = require('cors')
+const axios = require("axios");
+const {verify} = require("jsonwebtoken");
 app.use(cors())
 
 
 app.use(bodyParser.json())
+app.use(express.json());
 console.log('express loaded.');
 const io = new Server(server, {
     cors: { // TODO: cors enable for development, please remove when build product
@@ -31,19 +31,114 @@ const io = new Server(server, {
     }
 });
 // socket io
-io.on('connection', function(client) {
+const supporting_room = [];
+const supporter_online = [];
+io.use(function(socket, next){
+    // console.log(socket.handshake)
+    if (socket.handshake.query && socket.handshake.query.token){
+        verify(socket.handshake.query.token, process.env.JWT_SECRET, function(err, decoded) {
+            if (err) return next(new Error('Authentication error'));
+            socket.decoded = decoded;
+            next();
+        });
+    }
+    else {
+        next(new Error('Authentication error'));
+    }
+}).on('connection', function(client) {
     console.log(client.id+' Client connected...');
-    client.on('join_room', (args) => {
-        client.join(md5(1))
+    client.on('join_room', async (args) => {
+        // console.log(args.roomId)
+        supporter_online.push(client.decoded.id)
+        const { id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
+        client.broadcast.emit('client_connect', { id, name, email, role, avatar });
+        client.join(args.roomId)
     });
 
     client.on("send_message", (args) => {
-        client.to(md5(1)).emit('receive_message', args)
+        // console.log(args)
+        client.to(args.roomId).emit('receive_message', args)
     });
+
+    client.on("typing_message", (args) => {
+        // console.log(client.decoded.id)
+        client.to(args.roomId).emit('start_typing_message', {})
+        setTimeout(() => {
+            client.to(args.roomId).emit('end_typing_message', {})
+        }, 3000)
+    });
+
+    client.on("ai_support", async (args) => {
+        if (supporting_room.includes(args[args.length-1].roomId)){
+            return
+        }
+        io.to(args[args.length - 1].roomId).emit('start_typing_message', {})
+        let listMessage = [{
+            role: 'user',
+            content: 'Bắt đầu cuộc hội thoại với tôi, bạn sẽ đóng vai là một chuyên gia hỗ trợ tâm lý.'
+        }]
+        for (let i = 0;i < args.length;i++){
+            let role = 'assistant'
+            if (args[i].isUser){
+                role = 'user'
+            }
+            listMessage.push({role: role, content: args[i].context});
+        }
+        supporting_room.push(args[args.length-1].roomId)
+        let response = {}
+        try {
+            response = await axios.post('https://gpt.hknight.dev/v1/chat/completions', {
+                // model: "gpt-3.5-turbo-0613",
+                messages: listMessage,
+                temperature: 0.7
+            }, {
+                // timeout: 10000,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                    "OpenAI-Organization": `${process.env.OPENAI_ORG_KEY}`
+                }
+            })
+        } catch (e) {
+            console.log(e)
+            io.to(args[args.length-1].roomId).emit('receive_message', {
+                username: 'AI - FPsy',
+                avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
+                context: 'Hệ thống phản hồi AI đang quá tải vui lòng thử lại sau!',
+                isUser: false,
+                time: (new Date()).getTime()
+            })
+            return;
+        }
+
+        // console.log(response.data.choices[0].message.content.trim())
+        io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
+        io.to(args[args.length - 1].roomId).emit('receive_message', {
+            username: 'AI - FPsy',
+            avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
+            context: response.data.trim(),
+            isUser: false,
+            time: (new Date()).getTime()
+        })
+        let  index = supporting_room.indexOf(args[args.length-1].roomId);
+        if (index !== -1) {
+            supporting_room.splice(index, 1);
+        }
+    });
+
+    client.on('disconnect', async function (){
+        supporter_online.push(client.decoded.id)
+        let  index = supporter_online.indexOf(client.decoded.id);
+        if (index !== -1) {
+            supporter_online.splice(index, 1);
+        }
+        const { id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
+        client.broadcast.emit('client_disconnect', { id, name, avatar, email, role });
+        console.log(client.id+' Client disconnected...');
+    })
 });
 
 console.log('socket.io loaded.');
-
 
 // mongodb
 console.log("connecting mongodb...");
@@ -54,9 +149,12 @@ console.log("connected mongodb success");
 
 
 // routes init
+
 app.use(express.static(join(__dirname, 'build')));
-const apiRoute = require('./routes/api')
-app.use('/api', apiRoute)
+app.use(express.static('public'))
+app.use('/api', require('./routes/api'))
+app.use('/auth', require('./routes/auth'))
+app.use('/user', require('./routes/user'))
 
 // route react binding
 app.get("*", (_, res) => res.sendFile("index.html", { root: "build" }));
