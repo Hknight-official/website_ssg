@@ -7,6 +7,7 @@ import {
 
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
+import {useEffect} from "react";
 
 const router = createBrowserRouter([
       {
@@ -20,7 +21,9 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-
+        useEffect(() => {
+            document.title = 'FPsy - School Psychology 4F';
+        }, []);
       return (
           <div className="App">
             <RouterProvider router={router} />
