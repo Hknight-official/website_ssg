@@ -32,7 +32,7 @@ const io = new Server(server, {
 });
 // socket io
 const supporting_room = [];
-const supporter_online = [];
+let supporter_online = [];
 io.use(function(socket, next){
     // console.log(socket.handshake)
     if (socket.handshake.query && socket.handshake.query.token){
@@ -47,13 +47,34 @@ io.use(function(socket, next){
     }
 }).on('connection', function(client) {
     console.log(client.id+' Client connected...');
+    // io.sockets.emit('supporter_update', supporter_online);
     client.on('join_room', async (args) => {
         // console.log(args.roomId)
-        supporter_online.push(client.decoded.id)
-        const { id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
-        client.broadcast.emit('client_connect', { id, name, email, role, avatar });
+        const { _id:id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
+        let isExist = false;
+        // eslint-disable-next-line array-callback-return
+        for (let value of supporter_online){
+            if (value.id == id){
+                isExist = true;
+            }
+        }
+        if (!isExist) {
+            supporter_online.push({id, name, email, role, avatar})
+        }
+        io.sockets.emit('supporter_update', supporter_online);
         client.join(args.roomId)
     });
+
+    client.on('disconnect', async () => {
+        const { _id:id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
+        supporter_online = supporter_online.filter((e) => {
+            // console.log(e.id, id, e.id !== id)
+            return e.id == id
+        });
+        console.log(supporter_online)
+        // io.sockets.emit('supporter_update', supporter_online);
+        console.log(client.id+' Client disconnected...');
+    })
 
     client.on("send_message", (args) => {
         // console.log(args)
@@ -125,17 +146,6 @@ io.use(function(socket, next){
             supporting_room.splice(index, 1);
         }
     });
-
-    client.on('disconnect', async function (){
-        supporter_online.push(client.decoded.id)
-        let  index = supporter_online.indexOf(client.decoded.id);
-        if (index !== -1) {
-            supporter_online.splice(index, 1);
-        }
-        const { id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
-        client.broadcast.emit('client_disconnect', { id, name, avatar, email, role });
-        console.log(client.id+' Client disconnected...');
-    })
 });
 
 console.log('socket.io loaded.');

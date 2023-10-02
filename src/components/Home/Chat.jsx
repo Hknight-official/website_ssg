@@ -28,20 +28,6 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     });
 
     useEffect(() => {
-        if (!listSupporter.length > 0){
-            setListMessage(message => [...message, {
-                roomId,
-                username: initlistMessages[0].username,
-                avatar: initlistMessages[0].avatar,
-                context: "Hiện tại tất cả tư vấn viên đều offline, chế độ phản hồi nhanh của AI sẽ được bật cho đến khi có tư vấn viên online trở lại.",
-                isUser: false,
-                time: (new Date()).getTime()
-            }])
-            timeoutAIauto.current = 1000
-        }
-    }, []);
-
-    useEffect(() => {
         if (listSupporter.length > 0){
             timeoutAIauto.current = 30000
         }
@@ -65,15 +51,24 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
             setIsTyping(false)
         })
 
-        socketRef.current.on('client_connect', function (args){
-            handleSetListSupporter(list => [...list, args])
+        socketRef.current.on('supporter_update', function (args){
+            console.log(args)
+            let list_supporter = args.filter((value) => {
+                return value.role === 1
+            })
+            if (!list_supporter.length > 0){
+                setListMessage(message => [...message, {
+                    roomId,
+                    username: initlistMessages[0].username,
+                    avatar: initlistMessages[0].avatar,
+                    context: "Hiện tại tất cả tư vấn viên đều offline, chế độ phản hồi nhanh của AI sẽ được bật cho đến khi có tư vấn viên online trở lại.",
+                    isUser: false,
+                    time: (new Date()).getTime()
+                }])
+                timeoutAIauto.current = 1000
+            }
+            handleSetListSupporter(list_supporter)
             // console.log("connect "+args)
-        })
-
-        socketRef.current.on('client_disconnect', function (args){
-            // new_list =
-            handleSetListSupporter(list => list.filter(function(el) { return el.id !== args.id; }))
-            // console.log("disconnect "+args)
         })
 
         return () => {
