@@ -27,12 +27,6 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
         scrollItem.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
     });
 
-    useEffect(() => {
-        if (listSupporter.length > 0){
-            timeoutAIauto.current = 30000
-        }
-    }, [listSupporter]);
-
     useEffect(() => { // init socket
         socketRef.current = socketIOClient.connect(configWebsite['url'], {
             query: {token: localStorage.getItem('token')}
@@ -66,6 +60,9 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                     time: (new Date()).getTime()
                 }])
                 timeoutAIauto.current = 1000
+            }
+            if (listSupporter.length > 0){
+                timeoutAIauto.current = 30000
             }
             handleSetListSupporter(list_supporter)
             // console.log("connect "+args)
