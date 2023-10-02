@@ -6,7 +6,7 @@ import {DataUserContext} from "../../Contexts";
 const initlistMessages = [
     {
         avatar: configWebsite.url+'/images/avatar_ai.jpg',
-        username: 'Administrator',
+        username: 'System',
         context: 'Chào mừng bạn đến với trang website. Hy vọng bạn sẽ có trải nghiệm tuyệt vời và giải quyết hiệu quả các vấn đề tâm lý tại đây.',
         isUser: false,
         time: (new Date()).getTime()
@@ -23,9 +23,18 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     const DataUser = useContext(DataUserContext)
     const timeoutAIauto = useRef(30*1000);
     const scrollItem = useRef(null);
+
+    // const firstCheckSupporter = useRef(false);
+
     useEffect(() => {
         scrollItem.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
     });
+
+    useEffect(() => {
+        if (listSupporter.length > 0){
+            timeoutAIauto.current = 30000
+        }
+    }, [listSupporter]);
 
     useEffect(() => { // init socket
         socketRef.current = socketIOClient.connect(configWebsite['url'], {
@@ -48,8 +57,10 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
         socketRef.current.on('supporter_update', function (args){
             console.log(args)
             let list_supporter = args.filter((value) => {
-                return value.role === 1
+                return value.role == 1
             })
+            handleSetListSupporter(list_supporter)
+
             if (!list_supporter.length > 0){
                 setListMessage(message => [...message, {
                     roomId,
@@ -61,10 +72,6 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                 }])
                 timeoutAIauto.current = 1000
             }
-            if (listSupporter.length > 0){
-                timeoutAIauto.current = 30000
-            }
-            handleSetListSupporter(list_supporter)
             // console.log("connect "+args)
         })
 

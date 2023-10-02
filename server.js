@@ -56,6 +56,7 @@ io.use(function(socket, next){
         for (let value of supporter_online){
             if (value.id == id){
                 isExist = true;
+                break;
             }
         }
         if (!isExist) {
