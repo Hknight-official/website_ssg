@@ -33,7 +33,7 @@ async function Login(req, res){
     }
     await User.updateOne({googleId: googleid}, { avatar: picture });
 
-    let token_jwt = sign({id: checkUserExist.id}, process.env.JWT_SECRET);
+    let token_jwt = sign({id: checkUserExist._id}, process.env.JWT_SECRET);
     // console.log(checkUserExist.id)
 
     await res.json({status: 1, message: 'Đăng nhập thành công.', token: token_jwt});
