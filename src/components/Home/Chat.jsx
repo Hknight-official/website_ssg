@@ -23,6 +23,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     const DataUser = useContext(DataUserContext)
     const timeoutAIauto = useRef(30*1000);
     const scrollItem = useRef(null);
+    const previousListSupporter = useRef(null);
 
     // const firstCheckSupporter = useRef(false);
 
@@ -61,8 +62,9 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
             let list_supporter = args.filter((value) => {
                 return value.role === 1
             })
-
-            if (!list_supporter.length > 0 && JSON.stringify(listSupporter) !== JSON.stringify(list_supporter)){
+            console.log(JSON.stringify(listSupporter), JSON.stringify(list_supporter))
+            if (!list_supporter.length > 0 && JSON.stringify(previousListSupporter.current) !== JSON.stringify(list_supporter)){
+                previousListSupporter.current = list_supporter
                 setListMessage(message => [...message, {
                     roomId,
                     username: initlistMessages[0].username,
