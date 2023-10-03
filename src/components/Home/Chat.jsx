@@ -96,7 +96,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
 
     const handleSendMessage = (e) => {
         setInputMessage(e.target.value)
-        if (e.keyCode !== 13 || e.shiftKey){
+        if (e.keyCode !== 13 || e.shiftKey || isTyping){
             return;
         }
         e.preventDefault();
