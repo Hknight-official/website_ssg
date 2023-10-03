@@ -46,7 +46,7 @@ function LeftNavBar({isLeft, handleClickLeft, listSupporter}) {
                     }
 
                 </div>
-                <div className="bottom-info" style={{paddingLeft: "15px"}}>
+                <div className="bottom-info d-flex" style={{paddingLeft: "5px"}}>
                     <div className="d-flex flex-row">
                         <div className="position-relative p-2" style={{width:"50px"}}>
                             <img className="rounded-circle" src={DataUser.avatar} width="100%" alt="avatar"/>
@@ -55,9 +55,13 @@ function LeftNavBar({isLeft, handleClickLeft, listSupporter}) {
                             <span className="name-client"><b>{DataUser.name} (You)</b></span>
                             <span className="">{DataUser.email}</span>
                         </div>
-
                     </div>
+                    <button className="btn btn-default btn-sm position-absolute" title="Logout account" onClick={() => {localStorage.clear(); window.location.reload()}} style={{right: "10px", top:"15px", color: "inherit"}}>
+                        <i className="fa-solid fa-xl fa-right-from-bracket"></i>
+                    </button>
+
                 </div>
+
             </div>
         </>
     )
