@@ -33,6 +33,8 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     useEffect(() => {
         if (listSupporter.length > 0){
             timeoutAIauto.current = 30000
+        } else {
+
         }
     }, [listSupporter]);
 
@@ -61,7 +63,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
             })
             handleSetListSupporter(list_supporter)
 
-            if (!list_supporter.length > 0){
+            if (!list_supporter.length > 0 && JSON.stringify(listSupporter) !== JSON.stringify(list_supporter)){
                 setListMessage(message => [...message, {
                     roomId,
                     username: initlistMessages[0].username,
