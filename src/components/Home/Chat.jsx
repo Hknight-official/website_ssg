@@ -59,9 +59,8 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
         socketRef.current.on('supporter_update', function (args){
             console.log(args)
             let list_supporter = args.filter((value) => {
-                return value.role == 1
+                return value.role === 1
             })
-            handleSetListSupporter(list_supporter)
 
             if (!list_supporter.length > 0 && JSON.stringify(listSupporter) !== JSON.stringify(list_supporter)){
                 setListMessage(message => [...message, {
@@ -74,6 +73,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                 }])
                 timeoutAIauto.current = 1000
             }
+            handleSetListSupporter(list_supporter)
             // console.log("connect "+args)
         })
 

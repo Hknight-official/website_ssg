@@ -130,6 +130,7 @@ io.use(function(socket, next){
                 isUser: false,
                 time: (new Date()).getTime()
             })
+            io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
             return;
         }
 
