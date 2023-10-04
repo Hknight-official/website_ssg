@@ -90,7 +90,7 @@ io.use(function(socket, next){
         }, 3000)
     });
 
-    client.on("ai_support", async (args) => {
+    client.on("ai_support", (args) => {
         if (supporting_room.includes(args[args.length-1].roomId)){
             return
         }
@@ -133,7 +133,7 @@ io.use(function(socket, next){
                 supporting_room.splice(index, 1);
             }
         }).catch((e) => {
-            console.log(e)
+            // console.log(e)
             io.to(args[args.length-1].roomId).emit('receive_message', {
                 username: 'AI - FPsy',
                 avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
