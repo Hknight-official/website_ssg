@@ -107,21 +107,32 @@ io.use(function(socket, next){
             listMessage.push({role: role, content: args[i].context});
         }
         supporting_room.push(args[args.length-1].roomId)
-        let response = {}
-        try {
-            response = await axios.post('https://gpt.hknight.dev/v1/chat/completions', {
-                // model: "gpt-3.5-turbo-0613",
-                messages: listMessage,
-                temperature: 0.7
-            }, {
-                // timeout: 10000,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-                    "OpenAI-Organization": `${process.env.OPENAI_ORG_KEY}`
-                }
+        // let response = {}
+        axios.post('https://gpt.hknight.dev/v1/chat/completions', {
+            // model: "gpt-3.5-turbo-0613",
+            messages: listMessage,
+            temperature: 0.7
+        }, {
+            // timeout: 10000,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                "OpenAI-Organization": `${process.env.OPENAI_ORG_KEY}`
+            }
+        }).then((response) => {
+            io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
+            io.to(args[args.length - 1].roomId).emit('receive_message', {
+                username: 'AI - FPsy',
+                avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
+                context: response.data.trim(),
+                isUser: false,
+                time: (new Date()).getTime()
             })
-        } catch (e) {
+            let  index = supporting_room.indexOf(args[args.length-1].roomId);
+            if (index !== -1) {
+                supporting_room.splice(index, 1);
+            }
+        }).catch((e) => {
             console.log(e)
             io.to(args[args.length-1].roomId).emit('receive_message', {
                 username: 'AI - FPsy',
@@ -131,22 +142,9 @@ io.use(function(socket, next){
                 time: (new Date()).getTime()
             })
             io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
-            return;
-        }
+        });
 
-        // console.log(response.data.choices[0].message.content.trim())
-        io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
-        io.to(args[args.length - 1].roomId).emit('receive_message', {
-            username: 'AI - FPsy',
-            avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
-            context: response.data.trim(),
-            isUser: false,
-            time: (new Date()).getTime()
-        })
-        let  index = supporting_room.indexOf(args[args.length-1].roomId);
-        if (index !== -1) {
-            supporting_room.splice(index, 1);
-        }
+
     });
 });
 
