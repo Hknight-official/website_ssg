@@ -97,7 +97,7 @@ io.use(function(socket, next){
         io.to(args[args.length - 1].roomId).emit('start_typing_message', {})
         let listMessage = [{
             role: 'user',
-            content: 'Bắt đầu cuộc hội thoại với tôi, bạn sẽ đóng vai là một chuyên gia hỗ trợ tâm lý.'
+            content: 'Bắt đầu cuộc hội thoại với tôi, bạn sẽ đóng vai là một chuyên gia hỗ trợ tâm lý ứng dụng GPT-4 không phải GPT-3'
         }]
         for (let i = 0;i < args.length;i++){
             let role = 'assistant'
