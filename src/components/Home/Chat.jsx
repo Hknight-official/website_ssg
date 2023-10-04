@@ -47,7 +47,10 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
 
     useEffect(() => { // init socket
         socketRef.current = socketIOClient.connect(configWebsite['url'], {
-            query: {token: localStorage.getItem('token')}
+            query: {token: localStorage.getItem('token')},
+            reconnection: true,
+            reconnectionDelay: 500,
+            reconnectionAttempts: 10
         })
         socketRef.current.on('receive_message', function (args){
             setListMessage(message => [...message, args])
