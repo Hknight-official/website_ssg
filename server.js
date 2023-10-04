@@ -94,6 +94,7 @@ io.use(function(socket, next){
         if (supporting_room.includes(args[args.length-1].roomId)){
             return
         }
+        client.join(args[args.length-1].roomId);
         io.to(args[args.length - 1].roomId).emit('start_typing_message', {})
         let listMessage = [{
             role: 'user',
