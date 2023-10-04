@@ -94,7 +94,7 @@ io.use(function(socket, next){
         if (supporting_room.includes(args[args.length-1].roomId)){
             return
         }
-        client.join(args[args.length-1].roomId);
+
         io.to(args[args.length - 1].roomId).emit('start_typing_message', {})
         let listMessage = [{
             role: 'user',
@@ -129,10 +129,6 @@ io.use(function(socket, next){
                 isUser: false,
                 time: (new Date()).getTime()
             })
-            let  index = supporting_room.indexOf(args[args.length-1].roomId);
-            if (index !== -1) {
-                supporting_room.splice(index, 1);
-            }
         }).catch((e) => {
             // console.log(e)
             io.to(args[args.length-1].roomId).emit('receive_message', {
@@ -145,6 +141,10 @@ io.use(function(socket, next){
             io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
         });
 
+        let  index = supporting_room.indexOf(args[args.length-1].roomId);
+        if (index !== -1) {
+            supporting_room.splice(index, 1);
+        }
 
     });
 });
