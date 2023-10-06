@@ -32,7 +32,7 @@ const io = new Server(server, {
 });
 // socket io
 const supporting_room = [];
-let supporter_online = [];
+
 io.use(function(socket, next){
     // console.log(socket.handshake)
     if (socket.handshake.query && socket.handshake.query.token){
@@ -50,30 +50,29 @@ io.use(function(socket, next){
     // io.sockets.emit('supporter_update', supporter_online);
     client.on('join_room', async (args) => {
         // console.log(args.roomId)
-        const { _id:id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
+        await User.update({_id: client.decoded.id}, {online: 1}, {upsert: true});
+        const listUserOnline = await User.find({online: 1});
         let isExist = false;
         // eslint-disable-next-line array-callback-return
-        for (let value of supporter_online){
-            if (value.id == id){
-                isExist = true;
-                break;
-            }
-        }
-        if (!isExist) {
-            supporter_online.push({id, name, email, role, avatar})
+        let supporter_online = [];
+        for (let value of listUserOnline){
+            supporter_online.push({ id:value.id, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
         }
         io.sockets.emit('supporter_update', supporter_online);
         client.join(args.roomId)
+        // console.log(supporter_online)
+        // client.to(args.roomId).emit('supporter_update', supporter_online);
     });
 
     client.on('disconnect', async () => {
-        const { _id:id, name, email, role, avatar } = await User.findOne({_id: client.decoded.id});
-        supporter_online = supporter_online.filter((e) => {
-            // console.log(e.id, id, e.id !== id)
-            return e.id == id
-        });
-        console.log(supporter_online)
-        // io.sockets.emit('supporter_update', supporter_online);
+        await User.update({_id: client.decoded.id}, {online: 0}, {upsert: true});
+        const listUserOnline = await User.find({online: 1});
+        let supporter_online = [];
+        for (let value of listUserOnline){
+            supporter_online.push({ id:value.id, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
+        }
+        // console.log(supporter_online)
+        io.sockets.emit('supporter_update', supporter_online);
         console.log(client.id+' Client disconnected...');
     })
 
@@ -90,7 +89,7 @@ io.use(function(socket, next){
         }, 3000)
     });
 
-    client.on("ai_support", (args) => {
+    client.on("ai_support", async (args) => {
         if (supporting_room.includes(args[args.length-1].roomId)){
             return
         }
@@ -109,28 +108,9 @@ io.use(function(socket, next){
         }
         supporting_room.push(args[args.length-1].roomId)
         // let response = {}
-        axios.post('https://gpt.hknight.dev/v1/chat/completions', {
-            // model: "gpt-3.5-turbo-0613",
-            messages: listMessage,
-            temperature: 0.7
-        }, {
-            // timeout: 10000,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-                "OpenAI-Organization": `${process.env.OPENAI_ORG_KEY}`
-            }
-        }).then((response) => {
-            io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
-            io.to(args[args.length - 1].roomId).emit('receive_message', {
-                username: 'AI - FPsy',
-                avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
-                context: response.data.trim(),
-                isUser: false,
-                time: (new Date()).getTime()
-            })
-        }).catch((e) => {
-            // console.log(e)
+        const gpt_support = require('./app/controllers/gpt/gpt_support')
+        let response = await gpt_support.getGPT(listMessage);
+        if (!response){
             io.to(args[args.length-1].roomId).emit('receive_message', {
                 username: 'AI - FPsy',
                 avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
@@ -139,7 +119,16 @@ io.use(function(socket, next){
                 time: (new Date()).getTime()
             })
             io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
-        });
+        } else {
+            io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
+            io.to(args[args.length - 1].roomId).emit('receive_message', {
+                username: 'AI - FPsy',
+                avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
+                context: response.trim(),
+                isUser: false,
+                time: (new Date()).getTime()
+            })
+        }
 
         let  index = supporting_room.indexOf(args[args.length-1].roomId);
         if (index !== -1) {

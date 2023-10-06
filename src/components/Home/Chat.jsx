@@ -28,13 +28,10 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     // const firstCheckSupporter = useRef(false);
 
     useEffect(() => {
-        scrollItem.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    });
-
-    useEffect(() => {
         if (listMessages.length > 2){
             localStorage.setItem('list_message', JSON.stringify(listMessages))
         }
+        scrollItem.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
     }, [listMessages]);
 
     useEffect(() => {

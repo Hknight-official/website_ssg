@@ -7,17 +7,23 @@ import {
 
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import {useEffect} from "react";
 
 const router = createBrowserRouter([
-      {
+     {
         path: "/",
         element: <Home />,
-      },
-    {
+     },
+     {
+        path: "/admin",
+        element: <Admin />,
+     },
+     {
         path: "/auth",
         element: <Auth />
-    }
+     },
+
 ]);
 
 function App() {

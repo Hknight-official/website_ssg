@@ -21,6 +21,9 @@ function Home(){
     useEffect(() => {
         user_axios.get('user/user_info').then((res) => {
            console.log(res.data)
+            if (res.data.data.role === 1){
+                navigate('/admin')
+            }
            setUserData(res.data.data)
         }).catch(function (error){
             if (error.response.status === 403) {
