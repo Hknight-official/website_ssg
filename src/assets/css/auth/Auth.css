@@ -32,7 +32,7 @@
 
 .scroll-button{
     position: absolute;
-    bottom: 0;
+    bottom: 150px;
     animation: alternate;
     animation-name: popup;
     animation-duration: 1s;
