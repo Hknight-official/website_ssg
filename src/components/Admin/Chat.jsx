@@ -19,18 +19,19 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     const socketRef = useRef(socketIOClient);
 
     const [inputMessage, setInputMessage] = useState('');
-    const [listMessages, setListMessage] = useState(sessionStorage.getItem('list_message') ? JSON.parse(sessionStorage.getItem('list_message')) : initlistMessages);
+    const [listMessages, setListMessage] = useState(sessionStorage.getItem('list_message')[roomId] ? JSON.parse(sessionStorage.getItem('list_message'))[roomId] : initlistMessages);
     const [isTyping, setIsTyping] = useState(false)
 
     const DataUser = useContext(DataUserContext)
     const scrollItem = useRef(null);
-    const previousListSupporter = useRef(null);
 
     // const firstCheckSupporter = useRef(false);
 
     useEffect(() => {
         if (listMessages.length > 2){
-            sessionStorage.setItem('list_message', JSON.stringify(listMessages))
+            sessionStorage.setItem('list_message', JSON.stringify({
+                [roomId]: listMessages
+            }))
         }
         // scrollItem.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
     }, [listMessages]);
