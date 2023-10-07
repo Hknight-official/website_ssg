@@ -69,7 +69,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
         return () => {
             socketRef.current.disconnect();
         };
-    }, []);
+    }, [roomId]);
 
     useEffect(() => {
         if (roomId === null){
