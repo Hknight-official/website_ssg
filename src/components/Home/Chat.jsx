@@ -1,6 +1,8 @@
 import '../../assets/css/home/components/Chat.css'
 import configWebsite from '../../config_website.json'
 import {useContext, useEffect, useRef, useState} from "react";
+import {markdown} from 'markdown';
+
 import socketIOClient from "socket.io-client";
 import {DataUserContext} from "../../Contexts";
 const initlistMessages = [
@@ -155,7 +157,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                                     <img className="rounded-circle p-2 avatar" src={message.avatar} width="90%" alt="avatar"/>
                                     <div className="p-2 small">
                                         <span><b>{message.username}</b> <small>{new Date(message.time).toLocaleTimeString()}</small></span><br/>
-                                        <span>{message.context}</span>
+                                        <span dangerouslySetInnerHTML={{__html:markdown.toHTML(message.context)}}></span>
                                     </div>
                                 </div>
                             ))

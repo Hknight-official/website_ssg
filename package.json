@@ -16,6 +16,7 @@
     "google-auth-library": "^9.0.0",
     "jsonwebtoken": "^9.0.2",
     "localforage": "^1.10.0",
+    "markdown": "^0.5.0",
     "match-sorter": "^6.3.1",
     "md5": "^2.3.0",
     "mongodb": "^6.0.0",
@@ -33,6 +34,7 @@
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "sort-by": "^1.2.0",
+    "util": "^0.12.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

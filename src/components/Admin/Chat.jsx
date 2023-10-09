@@ -5,6 +5,7 @@ import socketIOClient from "socket.io-client";
 import {DataUserContext} from "../../Contexts";
 import axios from "axios";
 import user_axios from "../../user_axios";
+import {markdown} from "markdown";
 const initlistMessages = [
     {
         avatar: configWebsite.url+'/images/avatar_ai.jpg',
@@ -41,6 +42,10 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
             reconnectionDelay: 500,
             reconnectionAttempts: 10
         })
+        socketRef.current.on('init_messages', function (args){
+            setListMessage(args)
+        })
+
         socketRef.current.on('receive_message', function (args){
             setListMessage(message => [...message, args])
         })
@@ -140,7 +145,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                                     <img className="rounded-circle p-2 avatar" src={message.avatar} width="90%" alt="avatar"/>
                                     <div className="p-2 small">
                                         <span><b>{message.username}</b> <small>{new Date(message.time).toLocaleTimeString()}</small></span><br/>
-                                        <span>{message.context}</span>
+                                        <span dangerouslySetInnerHTML={{__html:markdown.toHTML(message.context)}}></span>
                                     </div>
                                 </div>
                             ))

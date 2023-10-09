@@ -13,12 +13,12 @@
         position: absolute;
     }
     .home-page > .left-navbar-main {
-        left: -500px;
+        left: -100%;
         z-index: 1;
     }
 
     .home-page > .right-navbar-main {
-        top: -1000px;
+        top: -100%;
         z-index: 5;
     }
 

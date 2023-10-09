@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const http = require('http');
 const { Server } = require("socket.io");
 const User = require('./app/models/users')
+const Messages = require('./app/models/messages')
 
 // init express and socket io and env config
 console.log("init system...")
@@ -58,8 +59,13 @@ io.use(function(socket, next){
         for (let value of listUserOnline){
             supporter_online.push({ id:value.id, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
         }
+        let user = await User.findOne({_id: client.decoded.id});
         io.sockets.emit('supporter_update', supporter_online);
         client.join(args.roomId)
+        if (user.role === 1 && args.roomId){
+            let messages = await Messages.find({roomId: args.roomId, status: 0}, null, {sort: {'time': 'desc'}, limit: 20});
+            io.to(args.roomId).emit('init_messages', messages);
+        }
         // console.log(supporter_online)
         // client.to(args.roomId).emit('supporter_update', supporter_online);
     });
@@ -68,16 +74,27 @@ io.use(function(socket, next){
         await User.update({_id: client.decoded.id}, {online: 0}, {upsert: true});
         const listUserOnline = await User.find({online: 1});
         let supporter_online = [];
+        let role = 0;
         for (let value of listUserOnline){
+            if (value._id === value.id){
+                role = value.role;
+            }
             supporter_online.push({ id:value.id, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
         }
+
+        await Messages.updateMany({idUser: client.decoded.id, status: 0}, {$set: {status: 1}});
+
         // console.log(supporter_online)
         io.sockets.emit('supporter_update', supporter_online);
         console.log(client.id+' Client disconnected...');
     })
 
-    client.on("send_message", (args) => {
+    client.on("send_message", async (args) => {
         // console.log(args)
+        if (args.roomId) {
+            let createMessages = new Messages({idUser: client.decoded.id, ...args})
+            await createMessages.save();
+        }
         client.to(args.roomId).emit('receive_message', args)
     });
 
