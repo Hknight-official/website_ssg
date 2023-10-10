@@ -128,7 +128,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
 
     return (
         <>
-            <div className="chat-main col-lg-8 col-sm-12">
+            <div className="chat-main col-lg-7 col-sm-12">
                 <div className="navbar-chat p-2 position-relative">
                     <button onClick={handleClickLeft} className="show-button-mobile btn btn-sm btn-default border-1 border-white text-white">
                         <i className="fa-solid fa-users-line"></i>
@@ -176,8 +176,8 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                             </div>
                         ) : (<div></div>)
                     }
-                    <textarea value={inputMessage} onChange={handleTypingMessage} onKeyDown={handleSendMessage} className="input-chat-area col-12" placeholder="Send a message"></textarea>
-                    <p className="text-center small">Đoạn chat sẽ ẩn danh và không lưu trữ lại cuộc hội thoại.</p>
+                    <textarea value={inputMessage} style={{resize: "vertical"}} onChange={handleTypingMessage} onKeyDown={handleSendMessage} className="input-chat-area col-12" placeholder="Send a message"></textarea>
+                    <p className="text-center small">Mẹo: sử dụng nút đề xuất AI để nhận được gợi ý vào tin nhắn.</p>
                 </div>
 
             </div>

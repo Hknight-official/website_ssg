@@ -189,7 +189,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
                         ) : (<div></div>)
                     }
                     <textarea value={inputMessage} onChange={handleTypingMessage} onKeyDown={handleSendMessage} className="input-chat-area col-12" maxLength={250} placeholder="Send a message"></textarea>
-                    <p className="text-center small">Đoạn chat sẽ ẩn danh và không lưu trữ lại cuộc hội thoại.</p>
+                    <p className="text-center small">Đoạn chat sẽ ẩn danh bạn không cần phải lo về việc lo danh tính.</p>
                 </div>
 
             </div>

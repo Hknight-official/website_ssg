@@ -30,8 +30,9 @@ function LeftNavBar({isLeft, handleClickLeft, listSupporter, onChooseUser}) {
                                             bottom:"10px",
                                             right:"9px"
                                         }}></i>
+
                                     </div>
-                                    <span className="name-client"> {value.name}</span>
+                                    <span className="name-client"> Client {index}</span>
                                 </div>
                             </div>
                         ))

@@ -57,12 +57,16 @@ io.use(function(socket, next){
         // eslint-disable-next-line array-callback-return
         let supporter_online = [];
         for (let value of listUserOnline){
-            supporter_online.push({ id:value.id, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
+            supporter_online.push({ id:value.id, supporter: value.supporter, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
         }
         let user = await User.findOne({_id: client.decoded.id});
         io.sockets.emit('supporter_update', supporter_online);
         client.join(args.roomId)
         if (user.role === 1 && args.roomId){
+            let checkisSupporting = await User.find({_id: args.roomId});
+            if (!checkisSupporting.supporter){
+                await User.update({_id: args.roomId}, {supporter: client.decoded.id}, {upsert: true});
+            }
             let messages = await Messages.find({roomId: args.roomId, status: 0}, null, {sort: {'time': 'desc'}, limit: 20});
             io.to(args.roomId).emit('init_messages', messages);
         }
@@ -76,10 +80,14 @@ io.use(function(socket, next){
         let supporter_online = [];
         let role = 0;
         for (let value of listUserOnline){
-            if (value._id === value.id){
+            if (value._id === client.decoded.id){
                 role = value.role;
             }
             supporter_online.push({ id:value.id, name: value.name, email: value.email, role: value.role, avatar: value.avatar })
+        }
+
+        if (role === 1){
+            await User.update({supporter: client.decoded.id}, {supporter: null}, {upsert: true});
         }
 
         await Messages.updateMany({idUser: client.decoded.id, status: 0}, {$set: {status: 1}});
