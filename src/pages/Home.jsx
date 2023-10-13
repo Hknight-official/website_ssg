@@ -22,7 +22,7 @@ function Home() {
     user_axios
       .get("user/user_info")
       .then((res) => {
-        console.log(res.data);
+        // (res.data);
         if (res.data.data.role === 1) {
           navigate("/admin");
         }

@@ -67,24 +67,24 @@ function Chat({
     });
 
     socketRef.current.on("start_typing_message", function (args) {
-      console.log("typing...");
+      //console.log("typing...");
       setIsTyping(true);
     });
 
     socketRef.current.on("end_typing_message", function (args) {
-      console.log("end typing");
+      //console.log("end typing");
       setIsTyping(false);
     });
 
     socketRef.current.on("supporter_update", function (args) {
-      console.log(args);
+      //console.log(args);
       let list_supporter = args.filter((value) => {
         return value.role === 1;
       });
-      console.log(
-        JSON.stringify(listSupporter),
-        JSON.stringify(list_supporter)
-      );
+      // console.log(
+      //   JSON.stringify(listSupporter),
+      //   JSON.stringify(list_supporter)
+      // );
       if (
         !list_supporter.length > 0 &&
         JSON.stringify(previousListSupporter.current) !==

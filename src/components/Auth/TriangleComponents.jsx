@@ -26,7 +26,7 @@ const TriangleComponents = ({
                             <GoogleLogin size="large"
                                 onSuccess={onSuccessGoogle}
                                 onError={() => {
-                                    console.log('Login Failed');
+                                    //console.log('Login Failed');
                                 }}
                             />
                         </div>

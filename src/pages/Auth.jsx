@@ -33,7 +33,7 @@ const Auth = () => {
 
     useEffect(() => {
         user_axios.get('user/user_info').then((res) => {
-            console.log(res.data)
+            // console.log(res.data)
             navigate('/')
         }).catch(function (error){
 
