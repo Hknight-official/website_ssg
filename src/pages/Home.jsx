@@ -61,7 +61,12 @@ function Home() {
               }}
               roomId={userData.id}
             />
-            {/* <RightNavBar isRight={isRight} handleClickRight={() => {setIsRight(!isRight)}} /> */}
+            <RightNavBar
+              isRight={isRight}
+              handleClickRight={() => {
+                setIsRight(!isRight);
+              }}
+            />
           </div>
         </DataUserContext.Provider>
       )}

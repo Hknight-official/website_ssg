@@ -5,13 +5,13 @@ function RightNavBar({ isRight, handleClickRight }) {
     <>
       <div
         className={
-          "right-navbar-main col-md-2 " + (isRight ? "show-right-mobile" : "")
+          "right-navbar-main col-lg-2 " + (isRight ? "show-right-mobile" : "")
         }
       >
         <div className="">Hướng dẫn sử dụng</div>
         <button
           onClick={handleClickRight}
-          className="show-button-mobile btn btn-sm btn-default border-1 border-white text-white z-2"
+          className="show-button-mobile button-question btn btn-sm btn-default border-1 border-white text-white z-2"
           style={{
             position: "absolute",
             right: "10px",

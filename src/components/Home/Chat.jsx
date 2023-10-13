@@ -163,7 +163,7 @@ function Chat({
 
   return (
     <>
-      <div className="chat-main col-md-9 col-lg-10 col-sm-12">
+      <div className="chat-main col-md-9 col-lg-8 col-sm-12">
         <div className="navbar-chat p-2 position-relative">
           <button
             onClick={handleClickLeft}
@@ -173,7 +173,7 @@ function Chat({
           </button>
           <button
             onClick={handleClickRight}
-            className="show-button-mobile btn btn-sm btn-default border-1 border-white text-white float-end"
+            className="show-button-mobile button-question btn btn-sm btn-default border-1 border-white text-white float-end"
           >
             <i className="fa-solid fa-circle-question"></i>
           </button>

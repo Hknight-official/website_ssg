@@ -1,45 +1,51 @@
 .left-navbar-main {
-    background: #09001f;
-    color: #949ba4;
-    height: inherit;
-    padding: 2px 5px;
+  background: #09001f;
+  color: #949ba4;
+  height: inherit;
+  padding: 2px 5px;
 }
 .left-navbar-main > .list-chat .item-chat {
-    margin-top: 3px;
-    padding: 2px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 500;
+  margin-top: 3px;
+  padding: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
 }
 
 .left-navbar-main > .list-chat .active {
-    background: #404249;
+  background: #404249;
 }
 
 .left-navbar-main > .list-chat .item-chat:hover {
-    background: #36373d;
-
+  background: #36373d;
 }
 
 .name-client {
-    padding: 5.4% 2px 2px;
+  padding: 5.4% 2px 2px;
 }
 
 .left-navbar-main > .bottom-info {
-    background: #232428;
-    font-size: 0.75em;
-    height: 50px;
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+  background: #232428;
+  font-size: 0.75em;
+  height: 50px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 .show-button-mobile {
-    display: none;
+  display: none;
 }
+
+@media only screen and (max-width: 992px) {
+  .button-question {
+    display: inline-block;
+  }
+}
+
 @media only screen and (max-width: 768px) {
-    .show-button-mobile {
-        display: inline-block;
-    }
+  .show-button-mobile {
+    display: inline-block;
+  }
 }
