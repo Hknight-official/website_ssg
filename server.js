@@ -67,7 +67,7 @@ io.use(function(socket, next){
             if (!checkisSupporting.supporter){
                 await User.update({_id: args.roomId}, {supporter: client.decoded.id}, {upsert: true});
             }
-            let messages = await Messages.find({roomId: args.roomId}, null, {sort: {'time': 'desc'}, limit: 20});
+            let messages = await Messages.find({roomId: args.roomId}, null, {sort: {'time': 'asc'}, limit: 20});
             io.to(args.roomId).emit('init_messages', messages);
         }
         // console.log(supporter_online)
