@@ -129,7 +129,9 @@ io.use(function(socket, next){
             if (args[i].isUser){
                 role = 'user'
             }
-            listMessage.push({role: role, content: args[i].context});
+            if (args[i].content.split('').length <= 255){ // if text too long dont take
+                listMessage.push({role: role, content: args[i].context});
+            }
         }
         supporting_room.push(args[args.length-1].roomId)
         // let response = {}
@@ -146,13 +148,20 @@ io.use(function(socket, next){
             io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
         } else {
             io.to(args[args.length - 1].roomId).emit('end_typing_message', {})
-            io.to(args[args.length - 1].roomId).emit('receive_message', {
+
+            let arg_mess = {
                 username: 'AI - FPsy',
                 avatar: process.env.WEB_URL+'/images/avatar_ai.jpg',
                 context: response.trim(),
                 isUser: false,
                 time: (new Date()).getTime()
-            })
+            };
+
+            io.to(args[args.length - 1].roomId).emit('receive_message', arg_mess)
+
+            let createMessages = new Messages({idUser: client.decoded.id, ...arg_mess})
+            await createMessages.save();
+
         }
 
         let  index = supporting_room.indexOf(args[args.length-1].roomId);
