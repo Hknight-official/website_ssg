@@ -27,6 +27,8 @@ function Chat({
   const { userInfo } = dataUser ?? {};
   const roomId = userInfo?.id;
 
+  const typingTimeoutRef = useRef(null);
+
   const [inputMessage, setInputMessage] = useState("");
   const [listMessages, setListMessage] = useState(
     localStorage.getItem("list_message")
@@ -35,6 +37,7 @@ function Chat({
   );
   const [isTyping, setIsTyping] = useState(false);
 
+  const DataUser = useContext(DataUserContext);
   const timeoutAIauto = useRef(30 * 1000);
   const boxChatRef = useRef(null);
   const previousListSupporter = useRef(null);
@@ -74,12 +77,16 @@ function Chat({
     socketRef.current.on("start_typing_message", function (args) {
       //console.log("typing...");
       setIsTyping(true);
+      clearTimeout(typingTimeoutRef.current)
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000)
     });
 
-    socketRef.current.on("end_typing_message", function (args) {
-      //console.log("end typing");
-      setIsTyping(false);
-    });
+    // socketRef.current.on("end_typing_message", function (args) {
+    //   //console.log("end typing");
+    //   setIsTyping(false);
+    // });
 
     socketRef.current.on("supporter_update", function (args) {
       //console.log(args);
@@ -124,7 +131,7 @@ function Chat({
   }, [roomId]);
 
   const handleSendMessage = () => {
-    if (isTyping || !inputMessage.trim()) return;
+    if (!inputMessage.trim()) return;
     let args = {
       roomId,
       username: userInfo.name,
@@ -136,12 +143,13 @@ function Chat({
     socketRef.current.emit("send_message", args);
     args.username = "You";
     setListMessage((message) => [...message, args]);
+
     setInputMessage("");
   };
 
   const handleKeyDown = (e) => {
     setInputMessage(e.target.value);
-    if (e.keyCode !== 13 || e.shiftKey || isTyping || !inputMessage.trim()) {
+    if (e.keyCode !== 13 || e.shiftKey || !inputMessage.trim()) {
       return;
     }
     e.preventDefault();
