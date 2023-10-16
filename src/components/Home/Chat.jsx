@@ -1,10 +1,10 @@
 import "../../assets/css/home/components/Chat.css";
 import configWebsite from "../../config_website.json";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { markdown } from "markdown";
 
 import socketIOClient from "socket.io-client";
-import { DataUserContext } from "../../Contexts";
+import { useDataUserContext } from "../../Contexts";
 const initlistMessages = [
   {
     avatar: configWebsite.url + "/images/avatar_ai.jpg",
@@ -17,13 +17,15 @@ const initlistMessages = [
 ];
 
 function Chat({
-  roomId,
   handleClickLeft,
   handleClickRight,
   listSupporter,
   handleSetListSupporter,
 }) {
   const socketRef = useRef(socketIOClient);
+  const { dataUser } = useDataUserContext();
+  const { userInfo } = dataUser ?? {};
+  const roomId = userInfo?.id;
 
   const [inputMessage, setInputMessage] = useState("");
   const [listMessages, setListMessage] = useState(
@@ -33,18 +35,21 @@ function Chat({
   );
   const [isTyping, setIsTyping] = useState(false);
 
-  const DataUser = useContext(DataUserContext);
   const timeoutAIauto = useRef(30 * 1000);
-  const scrollItem = useRef(null);
+  const boxChatRef = useRef(null);
   const previousListSupporter = useRef(null);
 
   // const firstCheckSupporter = useRef(false);
+
+  const scrollToBottom = () => {
+    boxChatRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (listMessages.length > 2) {
       localStorage.setItem("list_message", JSON.stringify(listMessages));
     }
-    scrollItem.current.scrollIntoView({ block: "end", behavior: "smooth" });
+    scrollToBottom();
   }, [listMessages]);
 
   useEffect(() => {
@@ -118,16 +123,12 @@ function Chat({
     socketRef.current.emit("join_room", { roomId });
   }, [roomId]);
 
-  const handleSendMessage = (e) => {
-    setInputMessage(e.target.value);
-    if (e.keyCode !== 13 || e.shiftKey || isTyping) {
-      return;
-    }
-    e.preventDefault();
+  const handleSendMessage = () => {
+    if (isTyping || !inputMessage.trim()) return;
     let args = {
       roomId,
-      username: DataUser.name,
-      avatar: DataUser.avatar,
+      username: userInfo.name,
+      avatar: userInfo.avatar,
       context: inputMessage,
       isUser: true,
       time: new Date().getTime(),
@@ -135,8 +136,16 @@ function Chat({
     socketRef.current.emit("send_message", args);
     args.username = "You";
     setListMessage((message) => [...message, args]);
-
     setInputMessage("");
+  };
+
+  const handleKeyDown = (e) => {
+    setInputMessage(e.target.value);
+    if (e.keyCode !== 13 || e.shiftKey || isTyping || !inputMessage.trim()) {
+      return;
+    }
+    e.preventDefault();
+    handleSendMessage();
   };
 
   const handleTypingMessage = (e) => {
@@ -179,11 +188,10 @@ function Chat({
           </button>
         </div>
         <div className="box-chat">
-          <div className="p-2">
+          <div ref={boxChatRef} className="p-2">
             {listMessages.map((message, index, array) => (
               <div
                 key={index}
-                ref={scrollItem}
                 className="item-chat-message d-flex flex-row justify-content-start p-1"
               >
                 <img
@@ -241,14 +249,25 @@ function Chat({
           ) : (
             <></>
           )}
-          <textarea
-            value={inputMessage}
-            onChange={handleTypingMessage}
-            onKeyDown={handleSendMessage}
-            className="input-chat-area col-12"
-            maxLength={250}
-            placeholder="Send a message"
-          ></textarea>
+          <div className="w-100 d-flex flex-row overflow-hidden input-chat-wrapper">
+            <textarea
+              value={inputMessage}
+              onChange={handleTypingMessage}
+              onKeyDown={handleKeyDown}
+              className="input-chat-area w-100"
+              maxLength={250}
+              placeholder="Send a message"
+            ></textarea>
+            <button
+              className="btn btn-default btn-sm btn-send"
+              title="Send"
+              style={{ color: "inherit" }}
+              disabled={!inputMessage.trim()}
+              onClick={handleSendMessage}
+            >
+              <i className="fa-regular fa-lg fa-paper-plane"></i>
+            </button>
+          </div>
           <p className="text-center mb-0 small">
             Đoạn chat sẽ ẩn danh bạn không cần phải lo về việc lo danh tính.
           </p>

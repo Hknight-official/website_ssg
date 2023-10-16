@@ -27,13 +27,19 @@
   height: var(--chatbot-input-height);
   width: 100%;
 }
-.box-input-chat > .input-chat-area {
-  border-radius: 10px;
+
+.box-input-chat .input-chat-wrapper {
   background: #40414f;
+  border-radius: 10px;
+}
+
+.box-input-chat .input-chat-wrapper .input-chat-area {
+  background-color: inherit;
   color: #fffcf9;
   padding: 10px;
   border: transparent;
   resize: none;
+  outline: none;
 }
 .item-chat-message {
   white-space: pre-wrap;
@@ -41,6 +47,19 @@
 .item-chat-message > .avatar {
   width: 65px;
   height: 100%;
+}
+
+.btn-send {
+  outline: none;
+  border: none;
+}
+
+.btn-send svg {
+  color: white;
+}
+
+.btn-send:hover svg {
+  color: rgb(0, 132, 255);
 }
 
 @media only screen and (max-width: 768px) {

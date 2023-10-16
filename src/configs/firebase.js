@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/messaging";
 import { firebaseConfig } from "../utils/constants";
+import { FCM_VAPID_KEY } from "../configs/constants";
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);

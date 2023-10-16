@@ -11,12 +11,18 @@
 @media only screen and (max-width: 992px) {
   .home-page > .right-navbar-main {
     position: absolute;
-    top: -100%;
+    left: -100%;
     z-index: 5;
   }
 
+  .show-right-button {
+    display: inline-block;
+  }
+
   .home-page > .show-right-mobile {
-    top: 0;
+    left: 0%;
+    z-index: 5;
+    display: inline-block;
   }
 }
 
