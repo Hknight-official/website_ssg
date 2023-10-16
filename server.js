@@ -187,7 +187,7 @@ io.use(function (socket, next) {
       if (args[i].isUser) {
         role = "user";
       }
-      if (args[i]?.content?.split("")?.length <= 255) {
+      if (args[i].content.split("").length <= 255) {
         // if text too long dont take
         listMessage.push({ role: role, content: args[i].context });
       }
