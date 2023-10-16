@@ -9,9 +9,10 @@ import {
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getMessagingToken, onMessageListener } from "./configs/firebase";
 import user_axios from "./user_axios";
+import { DataUserProvider } from "./Contexts";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,8 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const [fcmToken, setFcmToken] = useState(null);
+
   useEffect(() => {
     document.title = "FPsy - School Psychology 4F";
   }, []);
@@ -40,6 +43,7 @@ function App() {
   useEffect(() => {
     const getCurrentToken = async () => {
       const currToken = await getMessagingToken();
+      setFcmToken(currToken);
       if (currToken) {
         user_axios
           .post("user/fcm_token", {
@@ -59,7 +63,9 @@ function App() {
 
   return (
     <div className="App">
-      <RouterProvider router={router} />
+      <DataUserProvider defaultValue={{ fcmToken }}>
+        <RouterProvider router={router} />
+      </DataUserProvider>
     </div>
   );
 }

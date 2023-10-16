@@ -4,16 +4,16 @@ async function fcm_token(req, res) {
   const { user } = req;
   const { fcmToken: newToken } = req.body;
 
-  let { fcmToken } = await User.findOne({ _id: user.id });
-  const findedFcmToken = fcmToken === newToken;
+  let { fcmTokens } = await User.findOne({ _id: user.id });
+  const findedFcmToken = fcmTokens.indexOf(newToken);
 
-  if (!findedFcmToken) {
+  if (findedFcmToken === -1) {
+    fcmTokens.push(newToken);
     await User.findByIdAndUpdate(user.id, {
-      fcmToken: newToken,
+      fcmTokens,
     });
   }
-
-  res.json({ status: 1, data: fcmToken });
+  res.json({ status: 1, data: fcmTokens });
 }
 
 module.exports = fcm_token;

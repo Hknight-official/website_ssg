@@ -8,7 +8,7 @@ module.exports = mongoose.model("users", {
   role: { type: Number, default: 0 },
   online: { type: Number, default: 0 },
   supporter: { type: String, default: null },
-  fcmToken: { type: String },
+  fcmTokens: [{ type: String }],
   create_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });

@@ -1,9 +1,24 @@
 import "../../assets/css/home/components/LeftNavBar.css";
-import { useContext, useEffect } from "react";
-import { DataUserContext } from "../../Contexts";
+import user_axios from "../../user_axios";
+import { useDataUserContext } from "../../Contexts";
 
 function LeftNavBar({ isLeft, handleClickLeft, listSupporter }) {
-  const DataUser = useContext(DataUserContext);
+  const { dataUser } = useDataUserContext();
+  const { fcmToken, userInfo } = dataUser ?? {};
+
+  const handleLogout = async () => {
+    user_axios
+      .post("auth/logout", {
+        fcmToken,
+        userId: userInfo.id,
+      })
+      .then((res) => {
+        localStorage.clear();
+        window.location.reload();
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <>
       <div
@@ -30,7 +45,7 @@ function LeftNavBar({ isLeft, handleClickLeft, listSupporter }) {
           {listSupporter.length > 0 ? (
             listSupporter.map((value, index) => (
               <div className="item-chat" key={index}>
-                <div className="d-flex flex-row">
+                <div className="d-flex flex-row  align-items-center">
                   <div
                     className="position-relative p-2"
                     style={{ width: "50px" }}
@@ -72,25 +87,22 @@ function LeftNavBar({ isLeft, handleClickLeft, listSupporter }) {
             <div className="position-relative p-2" style={{ width: "50px" }}>
               <img
                 className="rounded-circle"
-                src={DataUser.avatar}
+                src={userInfo?.avatar}
                 width="100%"
                 alt="avatar"
               />
             </div>
             <div className="d-flex flex-column">
               <span className="name-client">
-                <b>{DataUser.name} (You)</b>
+                <b>{userInfo?.name} (You)</b>
               </span>
-              <span className="">{DataUser.email}</span>
+              <span className="">{userInfo?.email}</span>
             </div>
           </div>
           <button
             className="btn btn-default btn-sm position-absolute"
             title="Logout account"
-            onClick={() => {
-              localStorage.clear();
-              window.location.reload();
-            }}
+            onClick={handleLogout}
             style={{ right: "10px", top: "15px", color: "inherit" }}
           >
             <i className="fa-solid fa-xl fa-right-from-bracket"></i>

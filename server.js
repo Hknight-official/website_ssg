@@ -6,13 +6,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const User = require("./app/models/users");
 const Messages = require("./app/models/messages");
-const FCM = require("fcm-node");
 const firebaseAdmin = require("firebase-admin");
 const serviceAccount = require("./firebase-admin.json");
-
-const fcm = new FCM(
-  "AAAABAunGe4:APA91bHHdQMpB-rGE1CsztKPTYxzaG_iZuceeg7DI0zxdwDmmRtIJCBx47eopWijrXqecRFBFF-yiCjjd_L0FOPSKV31N7NmCgbdSgrt2EMHmYCwoUaTPfaOyflGGh8SeZnzxNUz6WDN"
-);
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
@@ -30,6 +25,11 @@ const server = http.createServer(app);
 const cors = require("cors");
 const axios = require("axios");
 const { verify } = require("jsonwebtoken");
+const {
+  sendNotificationToSupporter,
+  findUsersByRoomId,
+  sendNotificationToUser,
+} = require("./app/utils/helpers");
 app.use(cors());
 
 app.use(bodyParser.json());
@@ -44,50 +44,6 @@ const io = new Server(server, {
 });
 // socket io
 const supporting_room = [];
-
-const sendNotification = (data, fcmTokens) => {
-  fcmTokens?.forEach((fcmToken) => {
-    console.log(fcmToken);
-    fcm.send(
-      {
-        to: fcmToken,
-        notification: data,
-      },
-      (err, resp) => {
-        if (err) console.log(err);
-        else console.log(resp);
-      }
-    );
-  });
-};
-
-const getListSupporter = async () => {
-  const users = await User.find({
-    role: 1,
-    online: 1,
-  });
-
-  return users;
-};
-
-const sendNotificationToSupporter = async (clientId) => {
-  const user = await User.findById(clientId);
-  const notificationData = {
-    title: "Tin nhắn mới",
-    body: "Bạn có 1 tin nhắn mới",
-  };
-  //   Check If user has a supporter, send notification to supporter
-  //  If not, send notification to supporters
-  if (user.supporter) {
-    const supporter = await User.findById(user.supporter);
-    sendNotification(notificationData, [supporter.fcmToken]);
-  } else {
-    const supporters = await getListSupporter();
-    supporters?.forEach((supporter) => {
-      sendNotification(notificationData, [supporter.fcmToken]);
-    });
-  }
-};
 
 io.use(function (socket, next) {
   // console.log(socket.handshake)
@@ -195,7 +151,12 @@ io.use(function (socket, next) {
       let createMessages = new Messages({ idUser: client.decoded.id, ...args });
       await createMessages.save();
 
-      sendNotificationToSupporter(client.decoded.id);
+      // Send Notifications
+      if (args.isUser) sendNotificationToSupporter(client.decoded.id);
+      else {
+        const userIds = await findUsersByRoomId(args.roomId);
+        await sendNotificationToUser(userIds);
+      }
     }
     client.to(args.roomId).emit("receive_message", args);
   });
