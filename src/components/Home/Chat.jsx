@@ -37,7 +37,7 @@ function Chat({
   );
   const [isTyping, setIsTyping] = useState(false);
 
-  const DataUser = useContext(DataUserContext);
+  // const DataUser = useContext(DataUserContext);
   const timeoutAIauto = useRef(30 * 1000);
   const boxChatRef = useRef(null);
   const previousListSupporter = useRef(null);
