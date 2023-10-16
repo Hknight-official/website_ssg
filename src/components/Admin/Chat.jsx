@@ -23,6 +23,8 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
     const [listMessages, setListMessage] = useState(sessionStorage.getItem('list_message') ? JSON.parse(sessionStorage.getItem('list_message')) : initlistMessages);
     const [isTyping, setIsTyping] = useState(false)
 
+    const typingTimeoutRef = useRef(null);
+
     const DataUser = useContext(DataUserContext)
     const scrollItem = useRef(null);
 
@@ -50,15 +52,19 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
             setListMessage(message => [...message, args])
         })
 
-        socketRef.current.on('start_typing_message', function (args){
-            //console.log('typing...')
-            setIsTyping(true)
-        })
+        socketRef.current.on("start_typing_message", function (args) {
+            //console.log("typing...");
+            setIsTyping(true);
+            clearTimeout(typingTimeoutRef.current)
+            typingTimeoutRef.current = setTimeout(() => {
+                setIsTyping(false);
+            }, 1000)
+        });
 
-        socketRef.current.on('end_typing_message', function (args){
-            //console.log('end typing')
-            setIsTyping(false)
-        })
+        // socketRef.current.on('end_typing_message', function (args){
+        //     //console.log('end typing')
+        //     setIsTyping(false)
+        // })
 
         socketRef.current.on('supporter_update', function (args){
             //console.log(args)
@@ -93,7 +99,7 @@ function Chat({roomId, handleClickLeft, handleClickRight, listSupporter, handleS
 
     const handleSendMessage = (e) => {
         setInputMessage(e.target.value)
-        if (e.keyCode !== 13 || e.shiftKey || isTyping){
+        if (e.keyCode !== 13 || e.shiftKey){
             return;
         }
         e.preventDefault();

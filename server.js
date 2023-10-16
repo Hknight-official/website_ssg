@@ -142,7 +142,7 @@ io.use(function (socket, next) {
       }
       let messages = await Messages.find({ roomId: args.roomId }, null, {
         sort: { time: "asc" },
-        limit: 20,
+        // limit: 20,
       });
       io.to(args.roomId).emit("init_messages", messages);
     }
@@ -203,9 +203,9 @@ io.use(function (socket, next) {
   client.on("typing_message", (args) => {
     // console.log(client.decoded.id)
     client.to(args.roomId).emit("start_typing_message", {});
-    setTimeout(() => {
-      client.to(args.roomId).emit("end_typing_message", {});
-    }, 3000);
+    // setTimeout(() => {
+    //   client.to(args.roomId).emit("end_typing_message", {});
+    // }, 3000);
   });
 
   client.on("ai_support", async (args) => {
@@ -243,9 +243,9 @@ io.use(function (socket, next) {
         isUser: false,
         time: new Date().getTime(),
       });
-      io.to(args[args.length - 1].roomId).emit("end_typing_message", {});
+      // io.to(args[args.length - 1].roomId).emit("end_typing_message", {});
     } else {
-      io.to(args[args.length - 1].roomId).emit("end_typing_message", {});
+      // io.to(args[args.length - 1].roomId).emit("end_typing_message", {});
 
       let arg_mess = {
         username: "AI - FPsy",
@@ -259,6 +259,7 @@ io.use(function (socket, next) {
 
       let createMessages = new Messages({
         idUser: client.decoded.id,
+        roomId: args[args.length - 1].roomId,
         ...arg_mess,
       });
       await createMessages.save();

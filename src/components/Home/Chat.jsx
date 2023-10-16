@@ -25,6 +25,8 @@ function Chat({
 }) {
   const socketRef = useRef(socketIOClient);
 
+  const typingTimeoutRef = useRef(null);
+
   const [inputMessage, setInputMessage] = useState("");
   const [listMessages, setListMessage] = useState(
     localStorage.getItem("list_message")
@@ -69,12 +71,16 @@ function Chat({
     socketRef.current.on("start_typing_message", function (args) {
       //console.log("typing...");
       setIsTyping(true);
+      clearTimeout(typingTimeoutRef.current)
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000)
     });
 
-    socketRef.current.on("end_typing_message", function (args) {
-      //console.log("end typing");
-      setIsTyping(false);
-    });
+    // socketRef.current.on("end_typing_message", function (args) {
+    //   //console.log("end typing");
+    //   setIsTyping(false);
+    // });
 
     socketRef.current.on("supporter_update", function (args) {
       //console.log(args);
@@ -120,7 +126,7 @@ function Chat({
 
   const handleSendMessage = (e) => {
     setInputMessage(e.target.value);
-    if (e.keyCode !== 13 || e.shiftKey || isTyping) {
+    if (e.keyCode !== 13 || e.shiftKey) {
       return;
     }
     e.preventDefault();
