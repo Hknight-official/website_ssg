@@ -77,10 +77,10 @@ function Chat({
     socketRef.current.on("start_typing_message", function (args) {
       //console.log("typing...");
       setIsTyping(true);
-      clearTimeout(typingTimeoutRef.current)
+      clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
         setIsTyping(false);
-      }, 1000)
+      }, 1000);
     });
 
     // socketRef.current.on("end_typing_message", function (args) {

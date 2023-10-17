@@ -11,7 +11,8 @@ import { useDataUserContext } from "../Contexts";
 function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const navigate = useNavigate();
-  const { onChangeDataUser } = useDataUserContext();
+  const { dataUser, onChangeDataUser } = useDataUserContext();
+  const { fcmToken } = dataUser ?? {};
 
   const [isLoading, setIsLoading] = useState(true);
   const [roomId, setRoomId] = useState(null);
@@ -19,6 +20,17 @@ function Home() {
   const [isLeft, setIsLeft] = useState(false);
   const [isRight, setIsRight] = useState(false);
   const [listSupporter, setListSupporter] = useState([]);
+
+  useEffect(() => {
+    if (fcmToken) {
+      user_axios
+        .post("user/fcm_token", {
+          fcmToken: fcmToken,
+        })
+        .then((res) => console.log(res))
+        .catch((error) => console.log(error));
+    }
+  }, [fcmToken]);
 
   useEffect(() => {
     function fetchDataUser() {
