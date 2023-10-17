@@ -44,14 +44,6 @@ function App() {
     const getCurrentToken = async () => {
       const currToken = await getMessagingToken();
       setFcmToken(currToken);
-      if (currToken) {
-        user_axios
-          .post("user/fcm_token", {
-            fcmToken: currToken,
-          })
-          .then((res) => console.log(res))
-          .catch((error) => console.log(error));
-      }
     };
     getCurrentToken();
   }, []);

@@ -66,19 +66,19 @@ function Chat({
       setListMessage((message) => [...message, args]);
     });
 
-        socketRef.current.on("start_typing_message", function (args) {
-            //console.log("typing...");
-            setIsTyping(true);
-            clearTimeout(typingTimeoutRef.current)
-            typingTimeoutRef.current = setTimeout(() => {
-                setIsTyping(false);
-            }, 1000)
-        });
+    socketRef.current.on("start_typing_message", function (args) {
+      //console.log("typing...");
+      setIsTyping(true);
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000);
+    });
 
-        // socketRef.current.on('end_typing_message', function (args){
-        //     //console.log('end typing')
-        //     setIsTyping(false)
-        // })
+    // socketRef.current.on('end_typing_message', function (args){
+    //     //console.log('end typing')
+    //     setIsTyping(false)
+    // })
 
     socketRef.current.on("supporter_update", function (args) {
       //console.log(args)
@@ -265,4 +265,4 @@ function Chat({
   );
 }
 
-export default Chat
+export default Chat;
